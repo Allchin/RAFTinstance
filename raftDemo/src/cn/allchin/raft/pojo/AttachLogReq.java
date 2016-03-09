@@ -1,15 +1,16 @@
 package cn.allchin.raft.pojo;
 
 public class AttachLogReq {
-	private String term;
+	private int term;
 	private String leaderId;
 	private Integer prevLogIndex;
 	private String[] entries;
 	private Integer leaderCommit;
-	public String getTerm() {
+	
+	public int getTerm() {
 		return term;
 	}
-	public void setTerm(String term) {
+	public void setTerm(int term) {
 		this.term = term;
 	}
 	public String getLeaderId() {
