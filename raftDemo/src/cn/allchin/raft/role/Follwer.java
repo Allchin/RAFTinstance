@@ -1,5 +1,6 @@
 package cn.allchin.raft.role;
 
+import cn.allchin.raft.cfg.RaftCfg;
 import cn.allchin.raft.log.Logger;
 import cn.allchin.raft.log.LoggerFactory;
 import cn.allchin.raft.pojo.CommonConstance;
@@ -9,7 +10,7 @@ public class Follwer implements State {
 	private Logger logger=LoggerFactory.getLogger(Follwer.class);
 	//
 	private CommonConstance cc;
-	private long timeout=3000;
+ 
 	private long lastLeaderHBtime=0;
 	public Follwer(CommonConstance cc ) {
 		logger.info("follower|fc1|构造follower");
@@ -21,7 +22,7 @@ public class Follwer implements State {
 		this.cc=cc;
 		//是否选举超时
 		if(isVoteTimeout()){
-			logger.info("follower|fw1|选举超时,转为候选人");
+			logger.info("follower|fw1|选举超时,转为候选人"+cc);
 			cc.increaseTerm();
 			return new Candidate(cc);
 		} 
@@ -30,6 +31,7 @@ public class Follwer implements State {
 	}
 
 	private boolean isVoteTimeout() {
+		int timeout=cc.getCfg().getIntValue(RaftCfg.heartBeatTimeout);
 		boolean isTimeout=System.currentTimeMillis()-timeout>lastLeaderHBtime;
 		if(isTimeout){
 			//一旦超时，就清理自己的投票状态，准备选举或者给别人投票

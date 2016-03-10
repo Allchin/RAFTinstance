@@ -3,6 +3,8 @@ package cn.allchin.raft.pojo;
 import java.util.ArrayList;
 import java.util.List;
 
+import cn.allchin.raft.cfg.RaftCfg;
+
 /**
  * 所有服务器上持久存在的
  * 
@@ -21,6 +23,8 @@ public class CommonConstance {
 	private String log[];
 	//服务器列表
 	private List<String> addr=new ArrayList<String>();
+	//运行配置
+	private RaftCfg cfg=null;// 
 	
 	public int getCurrentTerm() {
 		return currentTerm;
@@ -42,7 +46,8 @@ public class CommonConstance {
 	}
 	
 	public int increaseTerm(){
-		return ++currentTerm;
+		currentTerm=currentTerm+1;
+		return currentTerm;
 	}
 	public String getCurrentNodeAddress() {
 		return currentNodeAddress;
@@ -60,7 +65,13 @@ public class CommonConstance {
 	@Override
 	public String toString() {
 		// TODO Auto-generated method stub
-		return "|当期节点|"+this.currentNodeAddress+"|我投的票|"+voteFor+"|最后任期号|"+currentTerm;
+		return "|本宝宝上次投票|"+voteFor+"|最后任期号|"+currentTerm+"|@|"+this.currentNodeAddress;
+	}
+	public RaftCfg getCfg() {
+		return cfg;
+	}
+	public void setCfg(RaftCfg cfg) {
+		this.cfg = cfg;
 	}
 	
 }

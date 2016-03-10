@@ -22,7 +22,7 @@ public class Candidate implements State {
 	public Candidate(CommonConstance cc) {
 	 this.cc=cc;
 	 
-	 logger.info("candi|构造候选人"+cc);
+	 logger.info("candidate|构造方法"+cc);
 	}
 
 	@Override
@@ -34,10 +34,10 @@ public class Candidate implements State {
 			
 			if(isBreak){
 				//如果自己的竞选被打断了，则认为自己输了
-				logger.info("candi|cow1|竞选被打断了"+cc);
+				logger.info("candidate|cow1|竞选被打断了"+cc);
 				new Follwer(cc);
 			}
-			logger.info("candi|cow2|竞选成功，变成leader"+cc);
+			logger.info("candidate|cow2|竞选成功，变成leader"+cc);
 			return new Leader(cc );
 		}
 		/**
@@ -49,7 +49,7 @@ public class Candidate implements State {
 		 * 
 		 * 输了和超时都认为自己是超时，然后准备下次选举，直到被leader通知输了，才认为自己输了，变成follower
 		 * */
-		logger.info("candi|cow3|竞选失败，不变"+cc);
+		logger.info("candidate|cow3|竞选失败，不变"+cc);
 		return this;
 	}
 
@@ -72,7 +72,7 @@ public class Candidate implements State {
 		try {
 			Thread.sleep(random.nextInt(150)+150);
 		} catch (InterruptedException e) { }
-		logger.info("candi|ra1|请求大家投票给我"+cc);
+		logger.info("candidate|ra1|请求大家投票给我"+cc);
 		 
 		int votes=0;
 		for(String node:cc.getAddr()){
@@ -84,11 +84,11 @@ public class Candidate implements State {
 				votes++;
 			}
 		}
-		if(votes>(cc.getAddr().size()/2+1)){
-			logger.info("candi|ra2|竞选成功，收到大家的投票|"+votes+cc);
+		if(votes>=(cc.getAddr().size()/2+1)){
+			logger.info("candidate|ra2|竞选成功，收到大家的投票|"+votes+cc);
 			return true;
 		}
-		logger.info("candi|ra3|竞选失败，收到大家的投票|"+votes+cc);
+		logger.info("candidate|ra3|竞选失败，收到大家的投票|"+votes+cc);
 		return false;
 	}
 	
@@ -103,6 +103,7 @@ public class Candidate implements State {
 		VoteReqMsg msg=new VoteReqMsg();
 		msg.setDestAddress(address);
 		msg.setCandidate(cc.getCurrentNodeAddress());
+		msg.setTerm(cc.getCurrentTerm());
 		MessageResult result=Network.sendMsg(msg); 
 		return result.isSuccess(); 
 	}
@@ -118,8 +119,10 @@ public class Candidate implements State {
 	public State onHeartbeat(int term) {
 		if(term>=cc.getCurrentTerm()){
 			isBreak=true;
+			logger.info("candidate|cohb1|收到心跳，停止竞选，准备成为follwer"+cc);
 			return new Follwer(cc);
 		}
+		logger.info("candidate|cohb1|收到心跳并忽略，继续竞选|收到的term|"+term+cc);
 		return this;
 	}
 

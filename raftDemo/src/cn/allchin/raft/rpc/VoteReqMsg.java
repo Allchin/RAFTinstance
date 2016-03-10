@@ -3,6 +3,7 @@ package cn.allchin.raft.rpc;
 public class VoteReqMsg implements Message {
 	private String destAddress;
 	private String candidate ;
+	private int term;
 	public String getCandidate() { 
 		return candidate;
 	}
@@ -18,6 +19,14 @@ public class VoteReqMsg implements Message {
 
 	public void setCandidate(String candidate) {
 		this.candidate = candidate;
+	}
+
+	public int getTerm() {
+		return term;
+	}
+
+	public void setTerm(int term) {
+		this.term = term;
 	}
 	
 	
